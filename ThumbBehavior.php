@@ -21,6 +21,8 @@ class ThumbBehavior extends \yii\base\Behavior
 
     public $quality = 90;
 
+    public $throwException = true;
+
     public function init()
     {
         parent::init();
@@ -77,11 +79,22 @@ class ThumbBehavior extends \yii\base\Behavior
 
             $target .= '/' . $this->owner->{$this->attribute};
         }
+
+        if (!$this->throwException && !is_file($source))
+        {
+            return null;
+        }
+
         
         $result = ThumbHelper::thumb($source, $this->thumbsPath . '/' . $target, $width, $height, $mode, $quality);
 
         if (!$result)
         {
+            if (!$this->throwException)
+            {
+                return null;
+            }
+
             throw new Exception('Can\'t create thumb: ' . $target);
         }
 
