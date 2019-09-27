@@ -23,6 +23,8 @@ class ThumbBehavior extends \yii\base\Behavior
 
     public $throwException = true;
 
+    public $decode = false;
+
     public function init()
     {
         parent::init();
@@ -77,28 +79,42 @@ class ThumbBehavior extends \yii\base\Behavior
 
             $source = $this->basePath . '/' . $this->owner->{$this->attribute};
 
-            $target .= '/' . $this->owner->{$this->attribute};
+            $value = $this->owner->{$this->attribute};
+
+            if (!$value)
+            {
+                return null; // attribute is not defined
+            }
+
+            if ($this->decode)
+            {
+                $value = urldecode($value); 
+            }
+
+            $target .= '/' . $value;
         }
 
-        if (!$this->throwException && !is_file($source))
+        if (!is_file($target))
         {
-            return null;
-        }
-
-        
-        $result = ThumbHelper::thumb($source, $this->thumbsPath . '/' . $target, $width, $height, $mode, $quality);
-
-        if (!$result)
-        {
-            if (!$this->throwException)
+            if (!$this->throwException && !is_file($source))
             {
                 return null;
             }
 
-            throw new Exception('Can\'t create thumb: ' . $target);
+            $result = ThumbHelper::thumb($source, $this->thumbsPath . '/' . $target, $width, $height, $mode, $quality);
+
+            if (!$result)
+            {
+                if (!$this->throwException)
+                {
+                    return null;
+                }
+
+                throw new Exception('Can\'t create thumb: ' . $target);
+            }
         }
 
-        return $this->thumbsUrl . '/' . $target;
+        return $this->thumbsUrl . '/' . urlencode($target);
     }
 
 }
