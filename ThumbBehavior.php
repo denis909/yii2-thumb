@@ -94,7 +94,7 @@ class ThumbBehavior extends \yii\base\Behavior
             $target .= '/' . $value;
         }
 
-        if (!is_file($target))
+        if (!is_file($this->thumbsPath . '/' . $target))
         {
             if (!$this->throwException && !is_file($source))
             {
