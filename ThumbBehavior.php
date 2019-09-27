@@ -114,7 +114,7 @@ class ThumbBehavior extends \yii\base\Behavior
             }
         }
 
-        return $this->thumbsUrl . '/' . urlencode($target);
+        return $this->thumbsUrl . '/' . $target;
     }
 
 }
